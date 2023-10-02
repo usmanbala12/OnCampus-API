@@ -1,0 +1,1537 @@
+openapi: 3.0.3
+info:
+  title: OnCampus API
+  description: |
+    OnCampus is an application that provides campuses with a platform to create, publicze and manage events more effectively.
+  termsOfService: http://swagger.io/terms/
+  contact:
+    name: Usman bala
+    email: usmanxp12@gmail.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Development server
+tags:
+  - name: group
+    description: Endpoints related to groups
+    externalDocs:
+      description: Find out more
+      url: http://swagger.io
+  - name: event
+    description: Endpoints related to events
+  - name: user
+    description: Endpoints related to users
+paths:
+  /groups:
+    get:
+      tags: 
+        - group
+      summary: Find all groups
+      description: Find all groups and return them in an array.
+      operationId: findAllGroups
+      responses:
+        200:
+          description: All groups found and returned
+          # headers:
+          #   ETag:
+          #     description: An Id for this version of the response
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ApiResponseFindAllGroups'
+      security: [] # no need to authenticate this endpoint
+    post:
+      tags:
+        - group
+      summary: Create a group
+      description: Add a new group and return the saved one.
+      operationId: addGroup
+      requestBody:
+        description: Create a new group
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Group'
+              example:
+                name: Google developer student clud, BUK
+                description: we are a community of techies. software developers, system analyst, web desginers, graphic designers, animators, DBAs, etc.
+                imageUrl: ImageUrl
+        required: true
+      responses:
+        200:
+          description: Group created and returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseAddGroup'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseGroupBadRequest'
+  /groups/{groupId}:
+    get:
+      tags:
+        - group
+      summary: Find an group by Id
+      description: Find a single artifact and return it.
+      operationId: findGroupById
+      parameters:
+        - name: groupId
+          in: path
+          description: Id of group to return
+          required: true
+          schema:
+            type: string
+            example: '1250808601744904192'
+      responses:
+        200:
+          description: Group found and returned
+          # headers:
+          #   ETag:
+          #     description: An Id for this version of the response
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseFindOneGroup'
+        404:
+          description: Group not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseGroupNotFound'
+      security: [] # no need to authenticate this endpoint
+    put:
+      tags:
+        - group
+      summary: Update a group
+      description: Update an exisiting group and return the updated one.
+      operationId: updateGroup
+      parameters:
+        - name: groupId
+          in: path
+          description: Id of group to update
+          required: true
+          schema:
+            type: string
+            example: '1250808601744904191'
+      requestBody:
+        description: The group with updated info
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Group'
+              example:
+                name: BUK Business club
+                description: Welcome to polkadot and kusama, this is community for both technical and non technical people to learn about, discuss...
+                imageUrl: ImageUrl-update
+        required: true
+      responses:
+        200:
+          description: Group updated and returned
+          # headers:
+          #   ETag:
+          #     description: An Id for this version of the response
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUpdateGroup'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseGroupBadRequest'
+        404:
+          description: Artifact not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseGroupNotFound'
+    delete:
+      tags:
+        - group
+      summary: Delete a group
+      description: Delete a single group.
+      operationId: deleteGroup
+      parameters:
+        - name: groupId
+          in: path
+          description: Id of group to delete
+          required: true
+          schema:
+            type: string
+            example: '1250808601744904191'
+      responses:
+        200:
+          description: group deleted
+          # headers:
+          #   ETag:
+          #     description: An Id for this version of the response
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDelete'
+        404:
+          description: Group not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseGroupNotFound'
+  
+  /events:
+    get:
+      tags:
+        - event
+      summary: Find all events
+      description: Find all events and return them in an array.
+      operationId: findAllEvents
+      responses:
+        200:
+          description: All events found and returned
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ApiResponseFindAllEvents'
+    post:
+      tags:
+        - event
+      summary: Add an event
+      description: Add a new event and return it.
+      operationId: addEvent
+      requestBody:
+        description: The new Event
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Event'
+              example:
+                name: Flutter workshop
+                description: building industry standard applications with flutter.
+                type: physical
+                capacity: 150
+                time: 12-04-24 23:34:21
+                venue: julius berger multipurpose
+                tags: programming mobile coding
+        required: true
+      responses:
+        200:
+          description: Event added and returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseAddEvent'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseEventBadRequest'
+  /events/{eventId}:
+    get:
+      tags:
+        - event
+      summary: Find an event by Id
+      description: Find a single event and return it.
+      operationId: findEventById
+      parameters:
+        - name: eventId
+          in: path
+          description: Id of event to return
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        200:
+          description: event found and returned
+          # headers:
+          #   ETag:
+          #     description: An Id for this version of the response
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseFindOneEvent'
+        404:
+          description: event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseEventNotFound'
+    put:
+      tags:
+        - event
+      summary: Update an event
+      description: Update an exisiting event and return the updated one.
+      operationId: updateEvent
+      parameters:
+        - name: eventId
+          in: path
+          description: Id of event to update
+          required: true
+          schema:
+            type: integer
+            example: 2
+      requestBody:
+        description: The event with updated info
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Event'
+              example:
+                name: Flutter workshop - update
+                description: building industry standard applications with flutter.
+                type: physical
+                capacity: 160
+                time: 12-04-24 23:34:21
+                venue: julius berger multipurpose
+                tags: programming mobile coding
+        required: true
+      responses:
+        200:
+          description: Event updated and returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUpdateEvent'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseEventBadRequest'
+        404:
+          description: Event not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseEventNotFound'
+    delete:
+      tags:
+        - event
+      summary: Delete an event
+      description: Delete a single event.
+      operationId: deleteEvent
+      parameters:
+        - name: eventId
+          in: path
+          description: Id of event to delete
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        200:
+          description: Event deleted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDelete'
+        404:
+          description: Wizard not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseEventNotFound'
+  
+  /users:
+    get:
+      tags:
+        - user
+      summary: Find all users
+      description: Find all users and return them in an array.
+      operationId: findAllUsers
+      responses:
+        200:
+          description: All users found and returned
+          # headers:
+          #   ETag:
+          #     description: An Id for this version of the response
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/ApiResponseFindAllUsers'
+    post:
+      tags:
+        - user
+      summary: Add a user
+      description: Add a new user and return the saved one. Only users with admin role can perform this operation.
+      operationId: addUser
+      requestBody:
+        description: The new user
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/User'
+              example:
+                username: lily
+                password: ABCDEfghi123456*()
+                enabled: true
+                roles: user
+        required: true
+      responses:
+        200:
+          description: User added and returned
+          # headers:
+          #   ETag:
+          #     description: An Id for this version of the response
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseAddUser'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUserPostBadRequest'
+      # security:
+      #   - petstore_auth:
+      #       - 'write:pets'
+      #       - 'read:pets'
+  /users/{userId}:
+    get:
+      tags:
+        - user
+      summary: Find a user by Id
+      description: Find a single user and return it.
+      operationId: findUserById
+      parameters:
+        - name: userId
+          in: path
+          description: Id of user to return
+          required: true
+          schema:
+            type: integer
+            example: 2
+      responses:
+        200:
+          description: User found and returned
+          # headers:
+          #   ETag:
+          #     description: An Id for this version of the response
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseFindOneUser'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUserNotFound'
+    put:
+      tags:
+        - user
+      summary: Update a user
+      description: Update an exisiting user and return the updated one. Only users with admin role can perform this operation.
+      operationId: updateUser
+      parameters:
+        - name: userId
+          in: path
+          description: Id of user to update
+          required: true
+          schema:
+            type: integer
+            example: 1
+      requestBody:
+        description: The user with updated info
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/UserEditableFields'
+              example:
+                username: john-update
+                enabled: true
+                roles: admin user
+        required: true
+      responses:
+        200:
+          description: User updated and returned
+          # headers:
+          #   ETag:
+          #     description: An Id for this version of the response
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUpdateUser'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUserPutBadRequest'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUserNotFound'
+    delete:
+      tags:
+        - user
+      summary: Delete a user
+      description: Delete a single user. Only users with admin role can perform this operation.
+      operationId: deleteUser
+      parameters:
+        - name: userId
+          in: path
+          description: Id of user to delete
+          required: true
+          schema:
+            type: integer
+            example: 3
+      responses:
+        200:
+          description: User deleted
+          # headers:
+          #   ETag:
+          #     description: An Id for this version of the response
+          #     schema:
+          #       type: string
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseDelete'
+        404:
+          description: User not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUserNotFound'
+
+  /users/login:
+    post:
+      tags:
+        - user
+      summary: Log user into the system
+      description: Use HTTP basic authentication to log in users.
+      operationId: login
+      parameters:
+        - name: username
+          in: query
+          description: The username for login
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: The password for login in (clear text)
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: User logged in
+          # headers:
+          #   X-Rate-Limit:
+          #     description: Calls per hour allowed by the user
+          #     schema:
+          #       type: integer
+          #   X-Expires-After:
+          #     description: Date in UTC when token expires
+          #     schema:
+          #       type: string
+          #       format: date-time
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseToken'
+        401:
+          description: Bad credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseBadCredentials'
+      security:
+        - BasicAuth: []
+externalDocs:
+  description: Find out more
+  url: http://swagger.io
+components:
+  schemas:
+    Group:
+      title: Group
+      description: A group
+      type: object
+      properties:
+        id:
+          title: Id
+          description: Id of the group
+          type: string
+          example: '1250808601744904191'
+          readOnly: true
+        name:
+          title: Group name
+          description: Name of the group
+          type: string
+          example: Enactus, BUK
+        description:
+          title: Group description
+          description:  Description of the Group
+          type: string
+          example: We're a group of local wordpress desginers, developers and publishers.
+        imageUrl:
+          title: Group image url
+          description: Url of the image of the group
+          type: string
+          example: ImageUrl
+        members: 
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+            
+          example:
+            - id: 1
+              firstName: Usman
+              lastName: Bala
+              email: usmanxp12@gmail.com
+            - id: 2
+              firstName: Bilal
+              lastName: Aliyu
+              email: bilalbalarabealiyu62@gmail.com
+              
+        createdBy:
+          allOf:
+            - $ref: '#/components/schemas/User'
+            - example: 
+                id: 1
+                firstName: usman
+                lastName: bala
+                email: usmanxp12@gmail.com
+                role: admin user
+            - readOnly: true
+      required:
+        - id
+        - name
+        - description
+        - imageUrl
+        
+    Event:
+      title: Event
+      description: An Event
+      type: object
+      properties:
+        id:
+          title: Id
+          description: Id of the event
+          type: integer
+          minimum: 1
+          example: 2
+          readOnly: true
+        name:
+          title: event name
+          description: Name of the event
+          type: string
+          example: DSC BUK info session
+        description:
+          title: Description of event
+          description: Description of event
+          type: string
+          example: 2
+          readOnly: true
+        venue:
+          title: event venue
+          description: venue of the event
+          type: string
+          example: FOC Lab 3
+        createdDate: 
+          title: created date
+          description: time of creation of event
+          type: object
+          example: null
+        time:
+          title: Time
+          description: time of commencement of event
+          type: object
+          example: null
+        capacity:
+          title: capacity
+          description: maximum number of attendees
+          type: integer
+          example: 500
+        attendees: 
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+            
+          example:
+            - id: 1
+              firstName: Usman
+              lastName: Bala
+              email: usmanxp12@gmail.com
+            - id: 2
+              firstName: Bilal
+              lastName: Aliyu
+              email: bilalbalarabealiyu62@gmail.com
+          
+      required:
+        - id
+        - name
+        - description
+        - type
+        - time
+    User:
+      title: User
+      description: A user
+      allOf: # inheritance and composition
+        - $ref: '#/components/schemas/UserEditableFields'
+        - type: object
+          properties:
+            id:
+              title: Id
+              description: Id of the user
+              type: integer
+              minimum: 1
+              example: 1
+              readOnly: true
+            password:
+              title: Password
+              description: Password of the user
+              type: string
+              minLength: 8
+              maxLength: 30
+              pattern: ^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$
+              example: ABCDEfghi123456*()
+              writeOnly: true
+          required:
+            - id
+            - password
+    UserEditableFields:
+      title: User fields
+      description: Editable fields of the user, used to update the user
+      type: object
+      properties:
+        firstName:
+          title: first name
+          description: user's first name
+          type: string
+          example: usman
+        lastName:
+          title: last name
+          description: user's last name
+          type: string
+          example: bala
+        email:
+          title: email
+          description: email of the user
+          type: string
+          minLength: 1
+          maxLength: 30
+          pattern: ^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$
+          example: bilalbalarabealiyu62@gmail.com
+        enabled:
+          title: User account status
+          description: Status of the user
+          type: boolean
+          example: true
+        roles:
+          title: User roles
+          description: Roles of the user
+          type: string
+          example: admin user
+      required:
+        - firstName
+        - lastName
+        - email
+        - enabled
+        - roles
+    GroupList:
+      type: array
+      items:
+          $ref: '#/components/schemas/Group'
+      example:
+       - id: '1250808601744904191'
+         name: BUK Busniess club
+         description: welcome to polkadot and kusama kano! this is community for both technical and non technical people to learn about, discuss
+         imageUrl: ImageUrl
+         createdBy:
+            id: 1
+            firstName: Usman
+            lastName: Bala
+            email: usmanxp12@gmail.com 
+            roles: admin user
+       - id: '1250808601744904192'
+         name: Developer Student club, BUK
+         description: we are a community of techies. software developers, system analyst, web desginers, graphic designers, animators, DBAs, etc.
+         imageUrl: ImageUrl
+         createdBy:
+            id: 2
+            firstName: Bilal
+            lastName: Aliyu
+            email: bilalbalarabealiyu62@gmail.com
+            roles: user
+       - id: '1250808601744904193'
+         name: Enactus BUK
+         description:  We're a group of local wordpress desginers, developers and publishers.
+         imageUrl: ImageUrl
+         createdBy:
+            id: 1
+            firstName: Alamin
+            lastName: Masu
+            email: themasu7@gmail.com
+    EventList:
+      type: array
+      items:
+          $ref: '#/components/schemas/Event'
+      example:
+       - id: 1
+         name: DSC BUK info session
+         description: You can learn all you need to know about DSC BUK in this event
+         venue: FOC lab 3
+         datetime: 
+         createdDate: 
+         group:
+          id: '1250808601744904192'
+          name: Developer Student club, BUK
+          description: we are a community of techies. software developers, system analyst, web desginers, graphic designers, animators, DBAs, etc.
+          imageUrl: ImageUrl
+          createdBy:
+            id: 2
+            firstName: Bilal
+            lastName: Aliyu
+            email: bilalbalarabealiyu62@gmail.com
+            roles: user
+       - id: 2
+         name: Get into data science.
+         description: get to know how to venture into the field of datas science from seasoned professionals
+         venue: FOC lab 2
+         datetime: 23-17-24 14:56:21
+         createdDate: 23-17-24 14:56:21
+         group:
+          id: '1250808601744904192'
+          name: BUK data science club
+          description: we are a community of data science enthusiast.
+          imageUrl: ImageUrl
+          createdBy:
+            id: 2
+            firstName: Abba
+            lastName: Jibril
+            email: jibrilabbasani@gmail.com
+            roles: user    
+    UserList:
+      type: array
+      items:
+          $ref: '#/components/schemas/User'
+      example:
+       - id: 1
+         firstName: Usman
+         lastName: Bala
+         email: usmanxp12@gmail.com
+         enabled: true
+         roles: admin user
+       - id: 2
+         firstName: Alamin
+         lastName: Masu
+         email: themasu7@gmail.com
+         enabled: true
+         roles: user
+       - id: 3
+         firstName: Bilal
+         lastName: ALiyu
+         email: bilalbalarabealiyu62@gmail.com
+         enabled: false
+         roles: user
+    ApiResponseAddGroup:
+      title: API response for add Group
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          description: Return code
+          example: 200
+        message:
+          type: string
+          example: Add Success
+        data:
+          allOf: # inheritance and composition
+            - $ref: '#/components/schemas/Group'
+          example:
+            id: '1250808601744904197'
+            name: Crypto Space
+            description: A community of blockchain and web3 enthusiast.
+            imageUrl: ImageUrl
+            createdBy: 
+              id: 5
+              firstName: Saleem
+              lastName: Ali
+              email: saleemali@gmail.com
+              enabled: true
+              roles: user
+    ApiResponseAddEvent:
+      title: API response for add Event
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          description: Return code
+          example: 200
+        message:
+          type: string
+          example: Add Success
+        data:
+          allOf: # inheritance and composition
+            - $ref: '#/components/schemas/Event'
+          example:
+            id: 5
+            name: XRP vs ADA
+            description: discussion of the prospects and potential of XRP coin against ADA.
+            type: virtual
+            venue: null
+            time: 23-7-24 23:17:12
+            capacity: 400
+            attendees: 0
+            group:
+              name: Crypto Space
+              description: A community of blockchain and web3 enthusiast.
+              imageUrl: image-url
+              members: 150
+              createdBy: 
+                id: 5
+                firstName: Saleem
+                lastName: Ali
+                email: saleemali@gmail.com
+                enabled: true
+                roles: user
+    ApiResponseAddUser:
+      title: API response for add user
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          description: Return code
+          example: 200
+        message:
+          type: string
+          example: Add Success
+        data:
+          allOf: # inheritance and composition
+            - $ref: '#/components/schemas/User'
+          example:
+            id: 4
+            username: lily
+            enabled: true
+            roles: user
+    ApiResponseUpdateGroup:
+      title: API response for update group
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          description: Return code
+          example: 200
+        message:
+          type: string
+          example: Update Success
+        data:
+          allOf: # inheritance and composition
+            - $ref: '#/components/schemas/Group'
+          example:
+            id: '1250808601744904191'
+            name: Cryto Space - update
+            description: A community of blockchain and web 3 enthusiat.-update
+            imageUrl: ImageUrl-update
+    
+    ApiResponseUpdateEvent:
+      title: API response for update event
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          description: Return code
+          example: 200
+        message:
+          type: string
+          example: Update Success
+        data:
+          allOf: # inheritance and composition
+            - $ref: '#/components/schemas/Event'
+          example:
+            id: 2
+            name: DSC BUK info session-update
+            description: come to know about dsc buk
+            type: virtual - update
+            venue: null
+            time: 12-23-23 11:32:59
+            capacity: 80
+            group:
+              id: 4
+              name: Developer student club BUK
+              description: we are a community of techies. software developers, system analyst, web desginers, graphic designers, animators, DBAs, etc.
+              imageUrl: ImageUrl 
+              createdBy:
+                id: 2
+                firstName: Bilal
+                lastName: Aliyu
+                email: bilalbalarabealiyu62@gmail.com
+                roles: user
+            
+    ApiResponseUpdateUser:
+      title: API response for update user
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          description: Return code
+          example: 200
+        message:
+          type: string
+          example: Update Success
+        data:
+          allOf: # inheritance and composition
+            - $ref: '#/components/schemas/User'
+          example:
+            id: 1
+            username: john-update
+            enabled: true
+            roles: admin user
+    ApiResponseDelete:
+      title: API response for delete
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          description: Return code
+          example: 200
+        message:
+          type: string
+          example: Delete Success
+        data:
+          type: object
+          example: null
+    ApiResponseJoinGroup:
+      title: API response for joining group
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          description: Return code
+          example: 200
+        message:
+          type: string
+          example: Join group Success
+        data:
+          type: object
+          example: null
+          
+    ApiResponseAttendEvent:
+      title: API response for attending event
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          description: Return code
+          example: 200
+        message:
+          type: string
+          example: attend event Success
+        data:
+          type: object
+          example: null   
+          
+    ApiResponseFindAllGroups:
+      title: API response for find all groups
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Find All Success
+        data:
+          $ref: '#/components/schemas/GroupList'
+    ApiResponseFindAllEvents:
+      title: API response for find all events
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Find All Success
+        data:
+          $ref: '#/components/schemas/EventList'
+    ApiResponseFindAllUsers:
+      title: API response for find all users
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Find All Success
+        data:
+          $ref: '#/components/schemas/UserList'
+    ApiResponseFindOneGroup:
+      title: API response for find one artifact
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Find One Success
+        data:
+          allOf: # inheritance and composition
+            - $ref: '#/components/schemas/Group'
+          example:
+            id: '1250808601744904192'
+            name: Invisibility Cloak
+            description: An invisibility cloak is used to make the wearer invisible.
+            imageUrl: ImageUrl
+            owner:
+              id: 2
+              name: Harry Potter
+              numberOfArtifacts: 2
+    ApiResponseFindOneEvent:
+      title: API response for find one Event
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Find One Success
+        data:
+          allOf: # inheritance and composition
+            - $ref: '#/components/schemas/Event'
+          example:
+             id: 1
+             name: Reading club session
+             description: reading club session
+             createdDate: null
+             commencementDate: null
+             venue: lecture room one
+             type: physical
+             capacity: 30
+             group:
+              id: 1128383871722
+              name: MSSN FOC reading club
+              description: come here if you wish to improve your reading, writing and public speaking skills
+              createdBy:
+                id: 1
+                firstName: Usman
+                lastName: Bala
+                email: usmanxp12@gmail.com
+                roles: admin user
+                
+    ApiResponseFindOneUser:
+      title: API response for find one user
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Find One Success
+        data:
+          allOf: # inheritance and composition
+            - $ref: '#/components/schemas/User'
+          example:
+              id: 2
+              username: eric
+              enabled: true
+              roles: user
+    ApiResponseToken:
+      title: API response for successful login
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+          example: true
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: User Info and JSON Web Token
+        data:
+          $ref: '#/components/schemas/UserInfoAndToken'
+    
+    UserInfoAndToken:
+      title: User information and JWT
+      description: Information about the logged-in user and the JSON web token
+      properties:
+        userInfo:
+          $ref: '#/components/schemas/User'
+        token:
+          type: string
+          example: eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiam9obiIsImV4cCI6MTY3NDc5NTc1MSwiaWF0IjoxNjc0NzA5MzUxLCJhdXRob3JpdGllcyI6ImFkbWluIHVzZXIifQ.ZaXHGocHD0-HtcmTdflOVaf2-FWUTE7y65VS-Tzli5gaIGKCEjbDCu2n-p10a0DqdunnJBwGnvMB1XGwPNL-6JWr5ECOVOGH8N3H_Wc1j3nItIX2P4voh0cegw1JNyJcGwdBCLdquGQtW2dLMCV_c4peSoQ8UwHdlvABxsBSuUVy7cyiF_vgFDR0M8nNmePJATuroani61TjNxbnSz09WDUZOYxLujxBH27tdYXiVv5JMGVp4ZkyhrRx-bf8_vEryq3HeqztHGrgtKDH7FJbeWvnI4CmNuxvU_AdEjhXyUADLdz-eO3tc8hje1R4kBWnfpX3Mxdj1ZLxo_bvDYrN1A
+
+    ApiResponseGroupBadRequest:
+      title: API response for bad request error
+      description: The schema for bad request error
+      type: object
+      properties:
+        flag:
+          title: flag
+          description: Success or not
+          type: boolean
+          example: false
+          readOnly: true
+        code:
+          title: Http status code
+          description: Http status code
+          type: integer
+          example: 400
+          readOnly: true
+        message:
+          title: Message
+          description: The long error message
+          type: string
+          example: Provided arguments are invalid, see data for details.
+          readOnly: true
+        data:
+          $ref: '#/components/schemas/GroupBadRequest'
+    GroupBadRequest:
+      title: Artifact bad request
+      description: Messages describing a bad request error
+      type: object
+      properties:
+        name:
+          title: Name of the group
+          description: The error message
+          type: string
+          example: name is required.
+        description:
+          title: Description of the group
+          description: The error message
+          type: string
+          example: description is required.
+        imageUrl:
+          title: Image url of the group
+          description: The error message
+          type: string
+          example: imageUrl is required.
+    ApiResponseGroupNotFound:
+      title: API response for not found error
+      description: The schema for bad request error
+      type: object
+      properties:
+        flag:
+          title: flag
+          description: Success or not
+          type: boolean
+          example: false
+          readOnly: true
+        code:
+          title: Http status code
+          description: Http status code
+          type: integer
+          example: 404
+          readOnly: true
+        message:
+          title: Message
+          description: The long error message
+          type: string
+          example: Could not find group with Id 1250808601744904199 :(
+          readOnly: true
+        data:
+          type: object
+          example: null
+    ApiResponseEventBadRequest:
+      title: API response for bad request error
+      description: The schema for bad request error
+      type: object
+      properties:
+        flag:
+          title: flag
+          description: Success or not
+          type: boolean
+          example: false
+          readOnly: true
+        code:
+          title: Http status code
+          description: Http status code
+          type: integer
+          example: 400
+          readOnly: true
+        message:
+          title: Message
+          description: The long error message
+          type: string
+          example: Provided arguments are invalid, see data for details.
+          readOnly: true
+        data:
+          $ref: '#/components/schemas/EventBadRequest'
+    EventBadRequest:
+      title: Event bad request
+      description: Messages describing a bad request error
+      type: object
+      properties:
+        name:
+          title: Name of the wizard
+          description: The error message
+          type: string
+          example: name is required.
+    ApiResponseEventNotFound:
+      title: API response for not found error
+      description: The schema for bad request error
+      type: object
+      properties:
+        flag:
+          title: flag
+          description: Success or not
+          type: boolean
+          example: false
+          readOnly: true
+        code:
+          title: Http status code
+          description: Http status code
+          type: integer
+          example: 404
+          readOnly: true
+        message:
+          title: Message
+          description: The long error message
+          type: string
+          example: Could not find event with Id 9 :(
+          readOnly: true
+        data:
+          type: object
+          example: null
+    ApiResponseUserPostBadRequest:
+      title: API response for bad request error
+      description: The schema for bad request error
+      type: object
+      properties:
+        flag:
+          title: flag
+          description: Success or not
+          type: boolean
+          example: false
+          readOnly: true
+        code:
+          title: Http status code
+          description: Http status code
+          type: integer
+          example: 400
+          readOnly: true
+        message:
+          title: Message
+          description: The long error message
+          type: string
+          example: Provided arguments are invalid, see data for details.
+          readOnly: true
+        data:
+          $ref: '#/components/schemas/UserPostBadRequest'
+    UserPostBadRequest:
+      title: User Post bad request
+      description: Messages describing a bad request error
+      type: object
+      properties:
+        username:
+          title: Username of the user
+          description: The error message
+          type: string
+          example: username is required.
+        password:
+          title: User password
+          description: The error message
+          type: string
+          example: password is required.
+        roles:
+          title: User roles
+          description: The error message
+          type: string
+          example: roles are required.
+    ApiResponseUserPutBadRequest:
+      title: API response for bad request error
+      description: The schema for bad request error
+      type: object
+      properties:
+        flag:
+          title: flag
+          description: Success or not
+          type: boolean
+          example: false
+          readOnly: true
+        code:
+          title: Http status code
+          description: Http status code
+          type: integer
+          example: 400
+          readOnly: true
+        message:
+          title: Message
+          description: The long error message
+          type: string
+          example: Provided arguments are invalid, see data for details.
+          readOnly: true
+        data:
+          $ref: '#/components/schemas/UserPutBadRequest'
+    UserPutBadRequest:
+      title: User Put bad request
+      description: Messages describing a bad request error
+      type: object
+      properties:
+        username:
+          title: Username of the user
+          description: The error message
+          type: string
+          example: username is required.
+        roles:
+          title: User roles
+          description: The error message
+          type: string
+          example: roles are required.
+    ApiResponseUserNotFound:
+      title: API response for not found error
+      description: The schema for bad request error
+      type: object
+      properties:
+        flag:
+          title: flag
+          description: Success or not
+          type: boolean
+          example: false
+          readOnly: true
+        code:
+          title: Http status code
+          description: Http status code
+          type: integer
+          example: 404
+          readOnly: true
+        message:
+          title: Message
+          description: The long error message
+          type: string
+          example: Could not find user with Id 10 :(
+          readOnly: true
+        data:
+          type: object
+          example: null
+    ApiResponseBadCredentials:
+      title: API response for not found error
+      description: The schema for bad request error
+      type: object
+      properties:
+        flag:
+          title: flag
+          description: Success or not
+          type: boolean
+          example: false
+          readOnly: true
+        code:
+          title: Http status code
+          description: Http status code
+          type: integer
+          example: 401
+          readOnly: true
+        message:
+          title: Message
+          description: The long error message
+          type: string
+          example: username or password is incorrect.
+          readOnly: true
+        data:
+          type: object
+          example: Bad credentials
+  securitySchemes:
+    BasicAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: basic
+    BearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    GoogleOauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/v2/auth
+          tokenUrl: https://oauth2.googleapis.com/token
+          scopes:
+            users:read: Read user information
+    FacebookOauth2:
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://www.facebook.com/dialog/oauth 
+          tokenUrl: https://graph.facebook.com/oauth/access_token
+          scopes:
+            users:read: Read user information
+security: 
+  - BearerAuth: []
+  - GoogleOauth2: []
+  - FacebookOauth2: []
