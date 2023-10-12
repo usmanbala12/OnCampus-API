@@ -27,7 +27,7 @@ tags:
 paths:
   /groups:
     get:
-      tags: 
+      tags:
         - group
       summary: Find all groups
       description: Find all groups and return them in an array.
@@ -43,7 +43,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/ApiResponseFindAllGroups'
+                $ref: '#/components/schemas/ApiResponseFindAllGroups'
       security: [] # no need to authenticate this endpoint
     post:
       tags:
@@ -114,7 +114,7 @@ paths:
       tags:
         - group
       summary: Update a group
-      description: Update an exisiting group and return the updated one.
+      description: Update an existing group and return the updated one.
       operationId: updateGroup
       parameters:
         - name: groupId
@@ -192,7 +192,53 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseGroupNotFound'
-  
+
+  /groups/{groupId}/join:
+    put:
+      tags:
+        - group
+      summary: Add user as a member to group
+      description: Add user to the list of group members
+      operationId: JoinGroup
+      parameters:
+        - name: groupId
+          in: path
+          description: Id of group to join
+          required: true
+          schema:
+            type: string
+            example: '1250808601744904191'
+      responses:
+        200:
+          description: User added as group member
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseJoinGroup'
+
+  /groups/{groupId}/leave:
+    put:
+      tags:
+        - group
+      summary: remove user as a member to group
+      description: remove user from the list of group members
+      operationId: LeaveGroup
+      parameters:
+        - name: groupId
+          in: path
+          description: Id of group to join
+          required: true
+          schema:
+            type: string
+            example: '1250808601744904191'
+      responses:
+        200:
+          description: User remove as group member
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseLeaveGroup'
+
   /events:
     get:
       tags:
@@ -206,7 +252,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/ApiResponseFindAllEvents'
+                $ref: '#/components/schemas/ApiResponseFindAllEvents'
     post:
       tags:
         - event
@@ -346,12 +392,62 @@ paths:
               schema:
                 $ref: '#/components/schemas/ApiResponseDelete'
         404:
-          description: Wizard not found
+          description: Event not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiResponseEventNotFound'
-  
+  /events/{eventId}/rsvp:
+    put:
+      tags:
+        - event
+      summary: Add user as attendee to event
+      description: Add user to the list of event attendees
+      operationId: AttendEvent
+      parameters:
+        - name: eventId
+          in: path
+          description: Id of event to rsvp
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        200:
+          description: User added as event attendee
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseEventRsvp'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseEventRsvpBadRequest'
+  /events/{eventId}/cancel-rsvp:
+    put:
+      tags:
+        - event
+      summary: remove user as attendee to event
+      description: remove user from the list of event attendees
+      operationId: CancelRsvp
+      parameters:
+        - name: eventId
+          in: path
+          description: Id of event to rsvp
+          required: true
+          schema:
+            type: integer
+            example: 1
+      responses:
+        200:
+          description: User removed as event attendee
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseCancelEventRsvp'
+
   /users:
     get:
       tags:
@@ -370,7 +466,7 @@ paths:
           content:
             application/json:
               schema:
-                  $ref: '#/components/schemas/ApiResponseFindAllUsers'
+                $ref: '#/components/schemas/ApiResponseFindAllUsers'
     post:
       tags:
         - user
@@ -604,11 +700,11 @@ components:
           description: Url of the image of the group
           type: string
           example: ImageUrl
-        members: 
+        members:
           type: array
           items:
             $ref: '#/components/schemas/User'
-            
+
           example:
             - id: 1
               firstName: Usman
@@ -618,11 +714,11 @@ components:
               firstName: Bilal
               lastName: Aliyu
               email: bilalbalarabealiyu62@gmail.com
-              
+
         createdBy:
           allOf:
             - $ref: '#/components/schemas/User'
-            - example: 
+            - example:
                 id: 1
                 firstName: usman
                 lastName: bala
@@ -634,7 +730,7 @@ components:
         - name
         - description
         - imageUrl
-        
+
     Event:
       title: Event
       description: An Event
@@ -663,7 +759,7 @@ components:
           description: venue of the event
           type: string
           example: FOC Lab 3
-        createdDate: 
+        createdDate:
           title: created date
           description: time of creation of event
           type: object
@@ -678,11 +774,11 @@ components:
           description: maximum number of attendees
           type: integer
           example: 500
-        attendees: 
+        attendees:
           type: array
           items:
             $ref: '#/components/schemas/User'
-            
+
           example:
             - id: 1
               firstName: Usman
@@ -692,7 +788,7 @@ components:
               firstName: Bilal
               lastName: Aliyu
               email: bilalbalarabealiyu62@gmail.com
-          
+
       required:
         - id
         - name
@@ -767,50 +863,19 @@ components:
     GroupList:
       type: array
       items:
-          $ref: '#/components/schemas/Group'
+        $ref: '#/components/schemas/Group'
       example:
-       - id: '1250808601744904191'
-         name: BUK Busniess club
-         description: welcome to polkadot and kusama kano! this is community for both technical and non technical people to learn about, discuss
-         imageUrl: ImageUrl
-         createdBy:
+        - id: '1250808601744904191'
+          name: BUK Busniess club
+          description: welcome to polkadot and kusama kano! this is community for both technical and non technical people to learn about, discuss
+          imageUrl: ImageUrl
+          createdBy:
             id: 1
             firstName: Usman
             lastName: Bala
-            email: usmanxp12@gmail.com 
+            email: usmanxp12@gmail.com
             roles: admin user
-       - id: '1250808601744904192'
-         name: Developer Student club, BUK
-         description: we are a community of techies. software developers, system analyst, web desginers, graphic designers, animators, DBAs, etc.
-         imageUrl: ImageUrl
-         createdBy:
-            id: 2
-            firstName: Bilal
-            lastName: Aliyu
-            email: bilalbalarabealiyu62@gmail.com
-            roles: user
-       - id: '1250808601744904193'
-         name: Enactus BUK
-         description:  We're a group of local wordpress desginers, developers and publishers.
-         imageUrl: ImageUrl
-         createdBy:
-            id: 1
-            firstName: Alamin
-            lastName: Masu
-            email: themasu7@gmail.com
-    EventList:
-      type: array
-      items:
-          $ref: '#/components/schemas/Event'
-      example:
-       - id: 1
-         name: DSC BUK info session
-         description: You can learn all you need to know about DSC BUK in this event
-         venue: FOC lab 3
-         datetime: 
-         createdDate: 
-         group:
-          id: '1250808601744904192'
+        - id: '1250808601744904192'
           name: Developer Student club, BUK
           description: we are a community of techies. software developers, system analyst, web desginers, graphic designers, animators, DBAs, etc.
           imageUrl: ImageUrl
@@ -820,46 +885,77 @@ components:
             lastName: Aliyu
             email: bilalbalarabealiyu62@gmail.com
             roles: user
-       - id: 2
-         name: Get into data science.
-         description: get to know how to venture into the field of datas science from seasoned professionals
-         venue: FOC lab 2
-         datetime: 23-17-24 14:56:21
-         createdDate: 23-17-24 14:56:21
-         group:
-          id: '1250808601744904192'
-          name: BUK data science club
-          description: we are a community of data science enthusiast.
+        - id: '1250808601744904193'
+          name: Enactus BUK
+          description:  We're a group of local wordpress desginers, developers and publishers.
           imageUrl: ImageUrl
           createdBy:
-            id: 2
-            firstName: Abba
-            lastName: Jibril
-            email: jibrilabbasani@gmail.com
-            roles: user    
+            id: 1
+            firstName: Alamin
+            lastName: Masu
+            email: themasu7@gmail.com
+    EventList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Event'
+      example:
+        - id: 1
+          name: DSC BUK info session
+          description: You can learn all you need to know about DSC BUK in this event
+          venue: FOC lab 3
+          datetime:
+          createdDate:
+          group:
+            id: '1250808601744904192'
+            name: Developer Student club, BUK
+            description: we are a community of techies. software developers, system analyst, web desginers, graphic designers, animators, DBAs, etc.
+            imageUrl: ImageUrl
+            createdBy:
+              id: 2
+              firstName: Bilal
+              lastName: Aliyu
+              email: bilalbalarabealiyu62@gmail.com
+              roles: user
+        - id: 2
+          name: Get into data science.
+          description: get to know how to venture into the field of datas science from seasoned professionals
+          venue: FOC lab 2
+          datetime: 23-17-24 14:56:21
+          createdDate: 23-17-24 14:56:21
+          group:
+            id: '1250808601744904192'
+            name: BUK data science club
+            description: we are a community of data science enthusiast.
+            imageUrl: ImageUrl
+            createdBy:
+              id: 2
+              firstName: Abba
+              lastName: Jibril
+              email: jibrilabbasani@gmail.com
+              roles: user
     UserList:
       type: array
       items:
-          $ref: '#/components/schemas/User'
+        $ref: '#/components/schemas/User'
       example:
-       - id: 1
-         firstName: Usman
-         lastName: Bala
-         email: usmanxp12@gmail.com
-         enabled: true
-         roles: admin user
-       - id: 2
-         firstName: Alamin
-         lastName: Masu
-         email: themasu7@gmail.com
-         enabled: true
-         roles: user
-       - id: 3
-         firstName: Bilal
-         lastName: ALiyu
-         email: bilalbalarabealiyu62@gmail.com
-         enabled: false
-         roles: user
+        - id: 1
+          firstName: Usman
+          lastName: Bala
+          email: usmanxp12@gmail.com
+          enabled: true
+          roles: admin user
+        - id: 2
+          firstName: Alamin
+          lastName: Masu
+          email: themasu7@gmail.com
+          enabled: true
+          roles: user
+        - id: 3
+          firstName: Bilal
+          lastName: ALiyu
+          email: bilalbalarabealiyu62@gmail.com
+          enabled: false
+          roles: user
     ApiResponseAddGroup:
       title: API response for add Group
       type: object
@@ -882,7 +978,7 @@ components:
             name: Crypto Space
             description: A community of blockchain and web3 enthusiast.
             imageUrl: ImageUrl
-            createdBy: 
+            createdBy:
               id: 5
               firstName: Saleem
               lastName: Ali
@@ -920,7 +1016,7 @@ components:
               description: A community of blockchain and web3 enthusiast.
               imageUrl: image-url
               members: 150
-              createdBy: 
+              createdBy:
                 id: 5
                 firstName: Saleem
                 lastName: Ali
@@ -971,7 +1067,7 @@ components:
             name: Cryto Space - update
             description: A community of blockchain and web 3 enthusiat.-update
             imageUrl: ImageUrl-update
-    
+
     ApiResponseUpdateEvent:
       title: API response for update event
       type: object
@@ -1001,14 +1097,14 @@ components:
               id: 4
               name: Developer student club BUK
               description: we are a community of techies. software developers, system analyst, web desginers, graphic designers, animators, DBAs, etc.
-              imageUrl: ImageUrl 
+              imageUrl: ImageUrl
               createdBy:
                 id: 2
                 firstName: Bilal
                 lastName: Aliyu
                 email: bilalbalarabealiyu62@gmail.com
                 roles: user
-            
+
     ApiResponseUpdateUser:
       title: API response for update user
       type: object
@@ -1065,25 +1161,7 @@ components:
         data:
           type: object
           example: null
-          
-    ApiResponseAttendEvent:
-      title: API response for attending event
-      type: object
-      properties:
-        flag:
-          type: boolean
-          description: Success or not
-        code:
-          type: integer
-          description: Return code
-          example: 200
-        message:
-          type: string
-          example: attend event Success
-        data:
-          type: object
-          example: null   
-          
+
     ApiResponseFindAllGroups:
       title: API response for find all groups
       type: object
@@ -1154,6 +1232,41 @@ components:
               id: 2
               name: Harry Potter
               numberOfArtifacts: 2
+
+    ApiResponseLeaveGroup:
+      title: API response for leave group
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: Leave group Success
+        data:
+          type: string
+          example: null
+
+    ApiResponseCancelEventRsvp:
+      title: API response for cancel event rsvp
+      type: object
+      properties:
+        flag:
+          type: boolean
+          description: Success or not
+        code:
+          type: integer
+          example: 200
+        message:
+          type: string
+          example: cancel event rsvp Success
+        data:
+          type: string
+          example: null
+
     ApiResponseFindOneEvent:
       title: API response for find one Event
       type: object
@@ -1171,15 +1284,15 @@ components:
           allOf: # inheritance and composition
             - $ref: '#/components/schemas/Event'
           example:
-             id: 1
-             name: Reading club session
-             description: reading club session
-             createdDate: null
-             commencementDate: null
-             venue: lecture room one
-             type: physical
-             capacity: 30
-             group:
+            id: 1
+            name: Reading club session
+            description: reading club session
+            createdDate: null
+            commencementDate: null
+            venue: lecture room one
+            type: physical
+            capacity: 30
+            group:
               id: 1128383871722
               name: MSSN FOC reading club
               description: come here if you wish to improve your reading, writing and public speaking skills
@@ -1189,7 +1302,7 @@ components:
                 lastName: Bala
                 email: usmanxp12@gmail.com
                 roles: admin user
-                
+
     ApiResponseFindOneUser:
       title: API response for find one user
       type: object
@@ -1207,10 +1320,10 @@ components:
           allOf: # inheritance and composition
             - $ref: '#/components/schemas/User'
           example:
-              id: 2
-              username: eric
-              enabled: true
-              roles: user
+            id: 2
+            username: eric
+            enabled: true
+            roles: user
     ApiResponseToken:
       title: API response for successful login
       type: object
@@ -1227,7 +1340,7 @@ components:
           example: User Info and JSON Web Token
         data:
           $ref: '#/components/schemas/UserInfoAndToken'
-    
+
     UserInfoAndToken:
       title: User information and JWT
       description: Information about the logged-in user and the JSON web token
@@ -1344,6 +1457,69 @@ components:
           description: The error message
           type: string
           example: name is required.
+    ApiResponseEventRsvp:
+      title: API response for successful rsvp
+      description: The schema for successful rsvp
+      type: object
+      properties:
+        flag:
+          title: flag
+          description: Success or not
+          type: boolean
+          example: false
+          readOnly: true
+        code:
+          title: Http status code
+          description: Http status code
+          type: integer
+          example: 200
+          readOnly: true
+        message:
+          title: Message
+          description: The long success message
+          type: string
+          example: event rsvp success
+          readOnly: true
+        data:
+          $ref: '#/components/schemas/Event'
+
+    ApiResponseEventRsvpBadRequest:
+      title: API response for bad request error
+      description: The schema for bad request error
+      type: object
+      properties:
+        flag:
+          title: flag
+          description: Success or not
+          type: boolean
+          example: false
+          readOnly: true
+        code:
+          title: Http status code
+          description: Http status code
+          type: integer
+          example: 400
+          readOnly: true
+        message:
+          title: Message
+          description: The long error message
+          type: string
+          example: failed to rsvp, event is up capacity.
+          readOnly: true
+        data:
+          $ref: '#/components/schemas/EventRsvpBadRequest'
+
+    EventRsvpBadRequest:
+      title: Event Rsvp bad request
+      description: Messages describing a bad request error
+      type: object
+      properties:
+        name:
+          title: Cannot rsvp
+          description: The error message
+          type: string
+          example: event is up to capacity.
+
     ApiResponseEventNotFound:
       title: API response for not found error
       description: The schema for bad request error
@@ -1456,7 +1632,7 @@ components:
           type: string
           example: roles are required.
     ApiResponseUserNotFound:
-      title: API response for not found error
+      title: API response for user not found error
       description: The schema for bad request error
       type: object
       properties:
@@ -1527,11 +1703,11 @@ components:
       type: oauth2
       flows:
         authorizationCode:
-          authorizationUrl: https://www.facebook.com/dialog/oauth 
+          authorizationUrl: https://www.facebook.com/dialog/oauth
           tokenUrl: https://graph.facebook.com/oauth/access_token
           scopes:
             users:read: Read user information
-security: 
+security:
   - BearerAuth: []
   - GoogleOauth2: []
   - FacebookOauth2: []
