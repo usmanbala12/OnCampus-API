@@ -1,6 +1,7 @@
 package com.oncampus.oncampusApi.group;
 
 
+import com.oncampus.oncampusApi.event.Event;
 import com.oncampus.oncampusApi.user.User;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -24,5 +25,8 @@ public class Group {
 
     @ManyToMany
     private List<User> members;
+
+    @OneToMany
+    private List<Event> events;
 
 }
