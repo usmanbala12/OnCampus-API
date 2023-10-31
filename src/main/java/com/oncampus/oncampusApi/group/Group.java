@@ -29,4 +29,19 @@ public class Group {
     @OneToMany
     private List<Event> events;
 
+    public void addMember(User member) {
+        members.add(member);
+    }
+
+    public void removeMember(User member) {
+        members.remove(member);
+    }
+
+    public void addEvent(Event event) {
+        events.add(event);
+    }
+
+    public void removeEvent(Event event) {
+        events.remove(event);
+    }
 }

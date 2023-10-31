@@ -30,4 +30,12 @@ public class Event {
     @ManyToMany
     private Set<Tag> tags;
 
+    public void addAttendee(User user) {
+        attendees.add(user);
+    }
+
+    public void removeAttendee(User user) {
+        attendees.remove(user);
+    }
+
 }
